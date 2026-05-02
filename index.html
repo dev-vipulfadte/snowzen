@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitality - Healthy Life Assistant</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="login-page" class="view active">
+        <div class="card">
+            <h2>Welcome to Snowzen</h2>
+            <p>Your 24/7 Healthy Lifestyle Assistant</p>
+            <input type="text" id="username-input" placeholder="Enter your name to login">
+            <button onclick="login()">Login</button>
+        </div>
+    </div>
+
+    <div id="app-container" class="view">
+        <nav id="navbar">
+            <div class="nav-topbar">
+                <div class="nav-brand">
+                    <div class="logo">Snowzen</div>
+                    <span class="nav-tag">Healthy Life Assistant</span>
+                </div>
+                <button type="button" id="nav-toggle" class="nav-toggle" aria-controls="nav-links" aria-expanded="true" onclick="toggleNavbar()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            <div id="nav-links" class="nav-links">
+                <button class="nav-btn active" data-view="dashboard" onclick="switchView('dashboard')">Dashboard</button>
+                <button class="nav-btn" data-view="edit-day" onclick="switchView('edit-day')">Edit My Day</button>
+                <button class="nav-btn" data-view="profile" onclick="switchView('profile')">Profile</button>
+                <button onclick="logout()" class="nav-btn logout-btn">Logout</button>
+            </div>
+        </nav>
+
+        <main>
+            <div id="dashboard" class="content-view active">
+                <div class="section-heading">
+                    <h2>Today's 24-Hour Breakdown</h2>
+                    <p>A clear view of how your day is distributed across the full 24 hours.</p>
+                </div>
+                <div class="dashboard-grid">
+                    <section class="card chart-card">
+                        <div class="card-header">
+                            <div>
+                                <h3>Day At A Glance</h3>
+                                <p>Pie chart based on your scheduled flow in 24-hour format.</p>
+                            </div>
+                            <div class="chart-header-actions">
+                                <span id="day-total" class="stat-chip">24h tracked</span>
+                                <div class="chart-mode-switcher">
+                                    <button type="button" class="chart-mode-btn active" data-chart-view="pie" onclick="setChartView('pie')">Pie</button>
+                                    <button type="button" class="chart-mode-btn" data-chart-view="table" onclick="setChartView('table')">Table</button>
+                                    <button type="button" class="chart-mode-btn" data-chart-view="graph" onclick="setChartView('graph')">Graph</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="chart-layout" class="chart-layout">
+                            <div id="chart-stage" class="chart-stage" role="button" tabindex="0" aria-label="Click to switch chart view" onclick="handleChartStageClick(event)" onkeydown="handleChartStageKeydown(event)">
+                                <div id="chart-active-view"></div>
+                            </div>
+                            <div id="chart-detail-panel" class="chart-detail-panel"></div>
+                        </div>
+                    </section>
+                    <section class="card insight-card">
+                        <div class="card-header">
+                            <div>
+                                <h3>Quick Snapshot</h3>
+                                <p>Your next task windows and total planned activities.</p>
+                            </div>
+                        </div>
+                        <div id="dashboard-stats" class="stats-grid"></div>
+                    </section>
+                </div>
+                <h3 class="subsection-title">Activity Timeline</h3>
+                <div id="timeline" class="timeline">
+                </div>
+            </div>
+
+            <div id="edit-day" class="content-view">
+                <div class="section-heading">
+                    <h2>Customize Your Schedule</h2>
+                    <p>Add, review, and refine the routine you want to follow.</p>
+                </div>
+                <div class="card form-card">
+                    <h3 id="task-form-title" class="subsection-title">Add Task</h3>
+                    <div class="time-inputs">
+                        <input type="time" id="task-start-time" required>
+                        <input type="time" id="task-end-time" required>
+                    </div>
+                    <input type="text" id="task-name" placeholder="Task Name (e.g., Drink Water)" required>
+                    <input type="text" id="task-agenda" placeholder="Agenda/Details" required>
+                    <div class="form-actions">
+                        <button id="task-submit-btn" onclick="saveTask()">Add Task</button>
+                        <button type="button" id="task-cancel-btn" class="secondary-btn hidden" onclick="cancelTaskEdit()">Cancel Edit</button>
+                    </div>
+                    <p id="task-form-msg" class="form-msg"></p>
+                </div>
+                <h3 class="subsection-title">Current Custom Tasks</h3>
+                <ul id="custom-task-list" class="task-list"></ul>
+            </div>
+
+            <div id="profile" class="content-view">
+                <div class="section-heading">
+                    <h2>User Profile</h2>
+                    <p>Keep your details up to date and switch the app theme any time.</p>
+                </div>
+                <div class="card form-card">
+                    <label>Name:</label>
+                    <input type="text" id="profile-name">
+                    <label>Age:</label>
+                    <input type="number" id="profile-age" placeholder="Enter Age">
+                    <label>Goal:</label>
+                    <input type="text" id="profile-goal" placeholder="e.g., Build muscle, sleep better">
+                    <label>Theme:</label>
+                    <div class="theme-switcher">
+                        <button type="button" class="theme-option" data-theme="emerald" onclick="selectTheme('emerald')">
+                            <span class="theme-preview emerald-preview"></span>
+                            <span>Emerald</span>
+                        </button>
+                        <button type="button" class="theme-option" data-theme="midnight" onclick="selectTheme('midnight')">
+                            <span class="theme-preview midnight-preview"></span>
+                            <span>Midnight</span>
+                        </button>
+                        <button type="button" class="theme-option" data-theme="sunset" onclick="selectTheme('sunset')">
+                            <span class="theme-preview sunset-preview"></span>
+                            <span>Sunset</span>
+                        </button>
+                        <button type="button" class="theme-option" data-theme="lavender" onclick="selectTheme('lavender')">
+                            <span class="theme-preview lavender-preview"></span>
+                            <span>Lavender</span>
+                        </button>
+                        <button type="button" class="theme-option" data-theme="cotton-candy" onclick="selectTheme('cotton-candy')">
+                            <span class="theme-preview cotton-candy-preview"></span>
+                            <span>Pink Blue</span>
+                        </button>
+                    </div>
+                    <button onclick="saveProfile()">Save Profile Details</button>
+                    <p id="profile-msg" class="success-msg"></p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="reminder-popup" class="reminder-popup" role="dialog" aria-live="polite" aria-modal="false">
+        <div class="reminder-popup__badge">Reminder</div>
+        <div class="reminder-popup__content">
+            <strong id="reminder-title">Upcoming task</strong>
+            <p id="reminder-body">We'll let you know when your next task window changes.</p>
+        </div>
+        <div class="reminder-popup__actions">
+            <button type="button" class="popup-action complete-action" onclick="handleReminderAction('complete')">Complete</button>
+            <button type="button" class="popup-action prepone-action" onclick="handleReminderAction('prepone')">Prepone</button>
+            <button type="button" class="popup-action not-done-action" onclick="handleReminderAction('not-done')">Not Done</button>
+            <button type="button" class="popup-action cancel-action" onclick="handleReminderAction('cancel')">Cancel</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
