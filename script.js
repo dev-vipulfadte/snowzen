@@ -338,18 +338,8 @@ function getDefaultUserData() {
     };
 }
 
-function showLogoutModal() {
-    const modal = document.getElementById("logout-modal");
-    if (modal) modal.classList.add("active");
-}
-
-function hideLogoutModal() {
-    const modal = document.getElementById("logout-modal");
-    if (modal) modal.classList.remove("active");
-}
-
 async function logout() {
-    hideLogoutModal();
+    if (!confirm("Are you sure you want to sign out?")) return;
 
     try {
         await signOut(auth);
@@ -1594,7 +1584,7 @@ function sendBrowserNotification(title, body) {
     if (Notification.permission === "granted" && currentUser) {
         new Notification(title, {
             body,
-            icon: "https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
+            icon: "logo.png"
         });
     }
 }
@@ -1617,7 +1607,7 @@ function sendSmartNotification() {
     if (Notification.permission === "granted" && currentUser) {
         new Notification("Snowzen — Vitality Reminder", {
             body: getSmartQuote(),
-            icon: "https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
+            icon: "logo.png"
         });
     }
 }
@@ -1693,8 +1683,6 @@ window.switchAuthTab = switchAuthTab;
 window.register = register;
 window.login = login;
 window.loginWithGoogle = loginWithGoogle;
-window.showLogoutModal = showLogoutModal;
-window.hideLogoutModal = hideLogoutModal;
 window.logout = logout;
 window.changePassword = changePassword;
 window.switchView = switchView;

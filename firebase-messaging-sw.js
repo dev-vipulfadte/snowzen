@@ -25,7 +25,7 @@ const ASSETS_TO_CACHE = [
     './style.css',
     './script.js',
     './manifest.json',
-    'https://cdn-icons-png.flaticon.com/512/2966/2966327.png',
+    './logo.png',
     'https://cdn-icons-png.flaticon.com/512/2991/2991148.png',
     'https://cdn-icons-png.flaticon.com/512/149/149071.png',
     'https://cdn-icons-png.flaticon.com/512/8943/8943377.png'
