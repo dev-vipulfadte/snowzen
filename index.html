@@ -3,42 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vitality - Healthy Life Assistant</title>
+    <!-- PWA / iOS Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Snowzen">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2966/2966327.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://cdn-icons-png.flaticon.com/512/2966/2966327.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="https://cdn-icons-png.flaticon.com/512/2966/2966327.png">
+    <title>Snowzen — Healthy Life Assistant</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <!-- ═══════════════════════════════════════════════════
+         LOADING SCREEN
+    ════════════════════════════════════════════════════ -->
+    <div id="global-loader" class="global-loader hide">
+        <div class="spinner"></div>
+        <h2 class="logo">Snowzen</h2>
+        <p id="loader-msg" class="loader-msg">Waking up Snowzen...</p>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         AUTH PAGE  (login + register tabs)
+    ════════════════════════════════════════════════════ -->
     <div id="login-page" class="view active">
-        <div class="card">
-            <h2>Welcome to Snowzen</h2>
-            <p>Your 24/7 Healthy Lifestyle Assistant</p>
-            <input type="text" id="username-input" placeholder="Enter your name to login">
-            <button onclick="login()">Login</button>
+        <div class="auth-card card">
+            <div class="auth-logo">
+                <span class="logo">Snowzen</span>
+                <span class="nav-tag">Healthy Life Assistant</span>
+            </div>
+
+            <!-- Tab switcher -->
+            <div class="auth-tabs" role="tablist">
+                <button type="button" id="tab-login"  class="auth-tab active" role="tab" aria-selected="true"  onclick="switchAuthTab('login')">Sign In</button>
+                <button type="button" id="tab-register" class="auth-tab"        role="tab" aria-selected="false" onclick="switchAuthTab('register')">Register</button>
+            </div>
+
+            <!-- LOGIN form -->
+            <form id="auth-login-panel" class="auth-panel" role="tabpanel" onsubmit="event.preventDefault(); login();">
+                <input type="email"    id="login-email" placeholder="Email address" autocomplete="email">
+                <input type="password" id="login-password" placeholder="Password"  autocomplete="current-password">
+                <button type="submit">Sign In</button>
+                <div class="auth-divider"><span>or</span></div>
+                <button type="button" class="secondary-btn google-btn" onclick="loginWithGoogle('login')">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Google" class="google-icon">
+                    Continue with Google
+                </button>
+                <p id="login-msg" class="form-msg"></p>
+            </form>
+
+            <!-- REGISTER form -->
+            <form id="auth-register-panel" class="auth-panel hidden" role="tabpanel" onsubmit="event.preventDefault(); register();">
+                <input type="email"    id="reg-email"  placeholder="Email address" autocomplete="email">
+                <input type="password" id="reg-password"  placeholder="Create a password"  autocomplete="new-password">
+                <input type="password" id="reg-password2" placeholder="Confirm password"   autocomplete="new-password">
+                <button type="submit">Create Account</button>
+                <div class="auth-divider"><span>or</span></div>
+                <button type="button" class="secondary-btn google-btn" onclick="loginWithGoogle('register')">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Google" class="google-icon">
+                    Continue with Google
+                </button>
+                <p id="register-msg" class="form-msg"></p>
+            </form>
         </div>
     </div>
 
+    <!-- ═══════════════════════════════════════════════════
+         MAIN APP
+    ════════════════════════════════════════════════════ -->
     <div id="app-container" class="view">
+        
         <nav id="navbar">
             <div class="nav-topbar">
                 <div class="nav-brand">
                     <div class="logo">Snowzen</div>
                     <span class="nav-tag">Healthy Life Assistant</span>
                 </div>
-                <button type="button" id="nav-toggle" class="nav-toggle" aria-controls="nav-links" aria-expanded="true" onclick="toggleNavbar()">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
+                <div class="nav-user-area">
+                    <button type="button" id="nav-toggle" class="nav-toggle"
+                            aria-controls="nav-links" aria-expanded="true"
+                            onclick="toggleNavbar()">
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
             </div>
             <div id="nav-links" class="nav-links">
-                <button class="nav-btn active" data-view="dashboard" onclick="switchView('dashboard')">Dashboard</button>
-                <button class="nav-btn" data-view="edit-day" onclick="switchView('edit-day')">Edit My Day</button>
-                <button class="nav-btn" data-view="profile" onclick="switchView('profile')">Profile</button>
-                <button onclick="logout()" class="nav-btn logout-btn">Logout</button>
+                <button class="nav-btn active" data-view="dashboard"  onclick="switchView('dashboard')">Dashboard</button>
+                <button class="nav-btn"        data-view="edit-day"   onclick="switchView('edit-day')">Edit My Day</button>
+                <button class="nav-btn"        data-view="calendar"   onclick="switchView('calendar')">Calendar <span id="nav-calendar-badge" class="nav-badge hidden"></span></button>
+                <button class="nav-btn"        data-view="profile"    onclick="switchView('profile')">Profile</button>
             </div>
         </nav>
 
         <main>
+            <!-- ─── DASHBOARD ─── -->
             <div id="dashboard" class="content-view active">
                 <div class="section-heading">
                     <h2>Today's 24-Hour Breakdown</h2>
@@ -54,19 +114,22 @@
                             <div class="chart-header-actions">
                                 <span id="day-total" class="stat-chip">24h tracked</span>
                                 <div class="chart-mode-switcher">
-                                    <button type="button" class="chart-mode-btn active" data-chart-view="pie" onclick="setChartView('pie')">Pie</button>
-                                    <button type="button" class="chart-mode-btn" data-chart-view="table" onclick="setChartView('table')">Table</button>
-                                    <button type="button" class="chart-mode-btn" data-chart-view="graph" onclick="setChartView('graph')">Graph</button>
+                                    <button type="button" class="chart-mode-btn active" data-chart-view="pie"   onclick="setChartView('pie')">Pie</button>
+                                    <button type="button" class="chart-mode-btn"        data-chart-view="table" onclick="setChartView('table')">Table</button>
                                 </div>
                             </div>
                         </div>
                         <div id="chart-layout" class="chart-layout">
-                            <div id="chart-stage" class="chart-stage" role="button" tabindex="0" aria-label="Click to switch chart view" onclick="handleChartStageClick(event)" onkeydown="handleChartStageKeydown(event)">
+                            <div id="chart-stage" class="chart-stage" role="button" tabindex="0"
+                                 aria-label="Click to switch chart view"
+                                 onclick="handleChartStageClick(event)"
+                                 onkeydown="handleChartStageKeydown(event)">
                                 <div id="chart-active-view"></div>
                             </div>
                             <div id="chart-detail-panel" class="chart-detail-panel"></div>
                         </div>
                     </section>
+
                     <section class="card insight-card">
                         <div class="card-header">
                             <div>
@@ -77,11 +140,12 @@
                         <div id="dashboard-stats" class="stats-grid"></div>
                     </section>
                 </div>
+
                 <h3 class="subsection-title">Activity Timeline</h3>
-                <div id="timeline" class="timeline">
-                </div>
+                <div id="timeline" class="timeline"></div>
             </div>
 
+            <!-- ─── EDIT MY DAY ─── -->
             <div id="edit-day" class="content-view">
                 <div class="section-heading">
                     <h2>Customize Your Schedule</h2>
@@ -90,10 +154,19 @@
                 <div class="card form-card">
                     <h3 id="task-form-title" class="subsection-title">Add Task</h3>
                     <div class="time-inputs">
-                        <input type="time" id="task-start-time" required>
-                        <input type="time" id="task-end-time" required>
+                        <div class="time-col">
+                            <label for="task-start-time" class="time-label">Start Time</label>
+                            <input type="time" id="task-start-time" required>
+                        </div>
+                        <div class="time-separator">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </div>
+                        <div class="time-col">
+                            <label for="task-end-time" class="time-label">End Time</label>
+                            <input type="time" id="task-end-time"   required>
+                        </div>
                     </div>
-                    <input type="text" id="task-name" placeholder="Task Name (e.g., Drink Water)" required>
+                    <input type="text" id="task-name"   placeholder="Task Name (e.g., Drink Water)" required>
                     <input type="text" id="task-agenda" placeholder="Agenda/Details" required>
                     <div class="form-actions">
                         <button id="task-submit-btn" onclick="saveTask()">Add Task</button>
@@ -105,62 +178,193 @@
                 <ul id="custom-task-list" class="task-list"></ul>
             </div>
 
+            <!-- ─── CALENDAR ─── -->
+            <div id="calendar" class="content-view">
+                <div class="section-heading">
+                    <h2>Special Days & Events</h2>
+                    <p>Track birthdays, anniversaries, and important reminders.</p>
+                </div>
+
+                <div class="card calendar-wrapper">
+                    <div class="calendar-header">
+                        <button type="button" class="secondary-btn icon-btn" onclick="changeMonth(-1)">&lt;</button>
+                        <h3 id="calendar-month-year">Month Year</h3>
+                        <button type="button" class="secondary-btn icon-btn" onclick="changeMonth(1)">&gt;</button>
+                    </div>
+                    <div class="calendar-weekdays">
+                        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                    </div>
+                    <div id="calendar-days" class="calendar-days"></div>
+                </div>
+
+                <div class="card form-card">
+                    <h3 class="subsection-title">Add Event</h3>
+                    <input type="date" id="event-date" required>
+                    <input type="text" id="event-title" placeholder="Event Title (e.g., Mom's Birthday)" required>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                        <select id="event-type" required style="margin: 0;">
+                            <option value="" disabled selected>Select Type</option>
+                            <option value="Birthday">Birthday</option>
+                            <option value="Anniversary">Anniversary</option>
+                            <option value="Meeting">Meeting</option>
+                            <option value="Appointment">Appointment</option>
+                            <option value="Exam">Exam</option>
+                            <option value="Holiday">Holiday</option>
+                            <option value="Vacation">Vacation</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <select id="event-recurrence" required style="margin: 0;">
+                            <option value="once" selected>Just Once</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                    <div class="form-actions" style="grid-template-columns: 1fr; margin-top: 0.9rem;">
+                        <button id="event-submit-btn" onclick="saveEvent()">Save Event</button>
+                    </div>
+                    <p id="event-form-msg" class="form-msg"></p>
+                </div>
+                
+                <div class="events-header">
+                    <h3 class="subsection-title">Upcoming Events</h3>
+                    <div class="event-filters">
+                        <input type="month" id="event-month-filter" onchange="renderEvents()" title="Filter by Month">
+                        <select id="event-filter" onchange="renderEvents()">
+                            <option value="All">All Events</option>
+                            <option value="Birthday">Birthdays</option>
+                            <option value="Anniversary">Anniversaries</option>
+                            <option value="Meeting">Meetings</option>
+                            <option value="Appointment">Appointments</option>
+                            <option value="Exam">Exams</option>
+                            <option value="Holiday">Holidays</option>
+                            <option value="Vacation">Vacations</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <ul id="events-list" class="task-list"></ul>
+            </div>
+
+            <!-- ─── PROFILE ─── -->
             <div id="profile" class="content-view">
                 <div class="section-heading">
                     <h2>User Profile</h2>
                     <p>Keep your details up to date and switch the app theme any time.</p>
                 </div>
-                <div class="card form-card">
+                <div class="card form-card profile-center">
+                    <div class="profile-pic-container">
+                        <img id="profile-pic-preview" class="profile-pic-preview" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profile Picture">
+                        <label for="profile-pic-upload" class="secondary-btn" style="cursor:pointer; display:inline-block; width:auto; padding:0.4rem 1rem; border-radius:999px; font-size:0.88rem; font-weight:600;">Change Picture</label>
+                        <input type="file" id="profile-pic-upload" accept="image/*" class="hidden" onchange="handleProfilePicUpload(event)">
+                    </div>
                     <label>Name:</label>
-                    <input type="text" id="profile-name">
+                    <input type="text"   id="profile-name">
                     <label>Age:</label>
-                    <input type="number" id="profile-age" placeholder="Enter Age">
+                    <input type="number" id="profile-age"  placeholder="Enter Age">
                     <label>Goal:</label>
-                    <input type="text" id="profile-goal" placeholder="e.g., Build muscle, sleep better">
+                    <input type="text"   id="profile-goal" placeholder="e.g., Build muscle, sleep better">
                     <label>Theme:</label>
                     <div class="theme-switcher">
-                        <button type="button" class="theme-option" data-theme="emerald" onclick="selectTheme('emerald')">
-                            <span class="theme-preview emerald-preview"></span>
-                            <span>Emerald</span>
+                        <button type="button" class="theme-option" data-theme="emerald"      onclick="selectTheme('emerald')">
+                            <span class="theme-preview emerald-preview"></span><span>Emerald</span>
                         </button>
-                        <button type="button" class="theme-option" data-theme="midnight" onclick="selectTheme('midnight')">
-                            <span class="theme-preview midnight-preview"></span>
-                            <span>Midnight</span>
+                        <button type="button" class="theme-option" data-theme="midnight"     onclick="selectTheme('midnight')">
+                            <span class="theme-preview midnight-preview"></span><span>Midnight</span>
                         </button>
-                        <button type="button" class="theme-option" data-theme="sunset" onclick="selectTheme('sunset')">
-                            <span class="theme-preview sunset-preview"></span>
-                            <span>Sunset</span>
+                        <button type="button" class="theme-option" data-theme="sunset"       onclick="selectTheme('sunset')">
+                            <span class="theme-preview sunset-preview"></span><span>Sunset</span>
                         </button>
-                        <button type="button" class="theme-option" data-theme="lavender" onclick="selectTheme('lavender')">
-                            <span class="theme-preview lavender-preview"></span>
-                            <span>Lavender</span>
+                        <button type="button" class="theme-option" data-theme="lavender"     onclick="selectTheme('lavender')">
+                            <span class="theme-preview lavender-preview"></span><span>Lavender</span>
                         </button>
                         <button type="button" class="theme-option" data-theme="cotton-candy" onclick="selectTheme('cotton-candy')">
-                            <span class="theme-preview cotton-candy-preview"></span>
-                            <span>Pink Blue</span>
+                            <span class="theme-preview cotton-candy-preview"></span><span>Pink Blue</span>
                         </button>
                     </div>
                     <button onclick="saveProfile()">Save Profile Details</button>
                     <p id="profile-msg" class="success-msg"></p>
                 </div>
+
+                <!-- ─── Change Password ─── -->
+                <div class="card form-card profile-center">
+                    <h3 class="subsection-title" style="margin-bottom:0.5rem;">Change Password</h3>
+                    <input type="password" id="pw-current"  placeholder="Current password">
+                    <input type="password" id="pw-new"      placeholder="New password">
+                    <input type="password" id="pw-confirm"  placeholder="Confirm new password">
+                    <button onclick="changePassword()">Update Password</button>
+                    <p id="pw-msg" class="form-msg"></p>
+                </div>
+
+            <div class="profile-center">
+                <button id="install-app-btn" onclick="installPWA()" class="secondary-btn hidden" style="max-width: 250px; margin-top: 1rem;">Install App</button>
+                <button onclick="showLogoutModal()" class="logout-btn" style="max-width: 250px; margin-top: 1rem;">Sign Out</button>
+            </div>
             </div>
         </main>
     </div>
 
+    <!-- ═══════════════════════════════════════════════════
+         REMINDER POPUP
+    ════════════════════════════════════════════════════ -->
     <div id="reminder-popup" class="reminder-popup" role="dialog" aria-live="polite" aria-modal="false">
         <div class="reminder-popup__badge">Reminder</div>
         <div class="reminder-popup__content">
             <strong id="reminder-title">Upcoming task</strong>
             <p id="reminder-body">We'll let you know when your next task window changes.</p>
         </div>
-        <div class="reminder-popup__actions">
-            <button type="button" class="popup-action complete-action" onclick="handleReminderAction('complete')">Complete</button>
-            <button type="button" class="popup-action prepone-action" onclick="handleReminderAction('prepone')">Prepone</button>
-            <button type="button" class="popup-action not-done-action" onclick="handleReminderAction('not-done')">Not Done</button>
-            <button type="button" class="popup-action cancel-action" onclick="handleReminderAction('cancel')">Cancel</button>
+        <div class="reminder-popup__actions" id="reminder-actions-end">
+            <button type="button" class="popup-action complete-action"  onclick="handleReminderAction('complete')">Complete</button>
+            <button type="button" class="popup-action prepone-action"   onclick="handleReminderAction('prepone')">Prepone</button>
+            <button type="button" class="popup-action not-done-action"  onclick="handleReminderAction('not-done')">Not Done</button>
+            <button type="button" class="popup-action cancel-action"    onclick="handleReminderAction('cancel')">Cancel</button>
+        </div>
+        <div class="reminder-popup__actions hidden" id="reminder-actions-start">
+            <button type="button" class="popup-action complete-action"  onclick="handleReminderAction('acknowledge-start')">Got it!</button>
+            <button type="button" class="popup-action cancel-action"    onclick="handleReminderAction('cancel')">Dismiss</button>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- ═══════════════════════════════════════════════════
+         LOGOUT MODAL
+    ════════════════════════════════════════════════════ -->
+    <div id="logout-modal" class="modal-overlay">
+        <div class="modal-card">
+            <svg class="modal-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <h3>Sign Out</h3>
+            <p>Are you sure you want to sign out of your account?</p>
+            <div class="modal-actions">
+                <button class="secondary-btn" onclick="hideLogoutModal()">Cancel</button>
+                <button class="logout-btn" onclick="logout()">Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         AI CHAT BOT
+    ════════════════════════════════════════════════════ -->
+    <div id="chat-widget" class="chat-widget">
+        <button id="chat-toggle-btn" class="chat-toggle-btn" aria-label="Open AI Chat" onclick="toggleChat()">
+            <img src="https://cdn-icons-png.flaticon.com/512/8943/8943377.png" alt="Chat" width="28" height="28">
+        </button>
+        <div id="chat-window" class="chat-window hidden">
+            <div class="chat-header">
+                <strong>Snowzen AI</strong>
+                <button type="button" class="close-chat-btn" aria-label="Close Chat" onclick="toggleChat()">&times;</button>
+            </div>
+            <div id="chat-messages" class="chat-messages">
+                <div class="bot-msg msg">Hi there! I'm your Snowzen wellness assistant. Ask me for health tips about sleep, hydration, diet, or exercise!</div>
+            </div>
+            <form id="chat-input-form" class="chat-input-area" onsubmit="event.preventDefault(); sendChatMessage();">
+                <input type="text" id="chat-input" placeholder="Ask about sleep, stress..." autocomplete="off">
+                <button type="submit" class="send-chat-btn">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
 </body>
 </html>
