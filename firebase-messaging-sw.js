@@ -66,3 +66,22 @@ self.addEventListener('fetch', (event) => {
         })
     );
 });
+
+// Handle background messages for alerts when the app is closed
+messaging.onBackgroundMessage((payload) => {
+    console.log('[firebase-messaging-sw.js] Received background message ', payload);
+    
+    const notificationTitle = payload.notification?.title || 'Snowzen Reminder';
+    const notificationOptions = {
+        body: payload.notification?.body || 'You have a scheduled task!',
+        icon: './logo.png',
+        badge: './logo.png',
+        requireInteraction: true, // Keeps the notification open until the user interacts
+        data: payload.data
+    };
+
+    self.registration.showNotification(
+        notificationTitle,
+        notificationOptions
+    );
+});
